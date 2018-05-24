@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{02587B36-CEBD-4E90-9A06-CC49006E66F4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Rays.Utility</RootNamespace>
+    <AssemblyName>Rays.Utility</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NAudio">
+      <HintPath>..\..\..\..\AudioTool\AudioTool\bin\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.OOXML.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.OpenXml4Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Quartz, Version=2.5.0.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Quartz.2.5.0\lib\net40\Quartz.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ThoughtWorks.QRCode, Version=1.0.4778.30637, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ThoughtWorks.QRCode.1.1.0\lib\ThoughtWorks.QRCode.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BadiAI\AipException.cs" />
+    <Compile Include="BadiAI\AipHttpRequest.cs" />
+    <Compile Include="BadiAI\AipServiceBase.cs" />
+    <Compile Include="BadiAI\Auth.cs" />
+    <Compile Include="BadiAI\BaiduAI.cs" />
+    <Compile Include="BadiAI\ContentCensor\AntiPorn.cs" />
+    <Compile Include="BadiAI\ContentCensor\AntiTerror.cs" />
+    <Compile Include="BadiAI\ContentCensor\Base.cs" />
+    <Compile Include="BadiAI\ContentCensor\ImageCensor.cs" />
+    <Compile Include="BadiAI\ContentCensor\Solution.cs" />
+    <Compile Include="BadiAI\ContentCensor\TextCensor.cs" />
+    <Compile Include="BadiAI\Define.cs" />
+    <Compile Include="BadiAI\Face\Face.cs" />
+    <Compile Include="BadiAI\ImageClassify\ImageClassify.cs" />
+    <Compile Include="BadiAI\ImageSearch\ImageSearch.cs" />
+    <Compile Include="BadiAI\Kg\Pie.cs" />
+    <Compile Include="BadiAI\Nlp\Nlp.cs" />
+    <Compile Include="BadiAI\Ocr\Ocr.cs" />
+    <Compile Include="BadiAI\Speech\Asr.cs" />
+    <Compile Include="BadiAI\Speech\Base.cs" />
+    <Compile Include="BadiAI\Speech\Tts.cs" />
+    <Compile Include="Cache\CacheHelper.cs" />
+    <Compile Include="Cache\DataCache.cs" />
+    <Compile Include="ChineseConvert\EcanConvertToCh.cs" />
+    <Compile Include="ChineseConvert\PinYin.cs" />
+    <Compile Include="CookieAndSession\CookieHelper.cs" />
+    <Compile Include="CookieAndSession\SessionHelper.cs" />
+    <Compile Include="DateTime\DateTimeHelper.cs" />
+    <Compile Include="DateTime\TimeHelper.cs" />
+    <Compile Include="Encrypt\DEncrypt.cs" />
+    <Compile Include="Encrypt\Encrypt.cs" />
+    <Compile Include="Encrypt\RSACryption.cs" />
+    <Compile Include="Excel\ExcelHelper.cs" />
+    <Compile Include="Excel\ExportExcel.cs" />
+    <Compile Include="Excel\GridViewExport.cs" />
+    <Compile Include="Excel\NPOIHelper.cs" />
+    <Compile Include="Exception\CommonException.cs" />
+    <Compile Include="File\DirFile.cs" />
+    <Compile Include="File\FileOperate.cs" />
+    <Compile Include="File\INIFile.cs" />
+    <Compile Include="Http\HttpHelper.cs" />
+    <Compile Include="Http\IpHelper.cs" />
+    <Compile Include="Http\NetHelper.cs" />
+    <Compile Include="Image\ImageClass.cs" />
+    <Compile Include="Image\ImageDown.cs" />
+    <Compile Include="Image\ImageHelper.cs" />
+    <Compile Include="Image\ImageUpload.cs" />
+    <Compile Include="JS\JsHelper.cs" />
+    <Compile Include="Log\Log.cs" />
+    <Compile Include="QRcode\BarCodeToHTML.cs" />
+    <Compile Include="QRcode\QRcode.cs" />
+    <Compile Include="QRcode\YzmHelper.cs" />
+    <Compile Include="Random\BaseRandom.cs" />
+    <Compile Include="Random\RandomHelper.cs" />
+    <Compile Include="Random\RandomOperate.cs" />
+    <Compile Include="StringHelper\ConfigHelper .cs" />
+    <Compile Include="StringHelper\ConvertHelper.cs" />
+    <Compile Include="StringHelper\ConvertJson.cs" />
+    <Compile Include="StringHelper\ModelConvertHelper.cs" />
+    <Compile Include="StringHelper\RegexHelper.cs" />
+    <Compile Include="StringHelper\StringHelper.cs" />
+    <Compile Include="Task\IntervalTask.cs" />
+    <Compile Include="Task\Quartz.NET\Job.cs" />
+    <Compile Include="Task\Quartz.NET\TestJob.cs" />
+    <Compile Include="Task\TimerInfo.cs" />
+    <Compile Include="Thread\ManagedThreadPool.cs" />
+    <Compile Include="UploadAndDownload\DownLoadHelper.cs" />
+    <Compile Include="UploadAndDownload\FileDown.cs" />
+    <Compile Include="UploadAndDownload\FileUp.cs" />
+    <Compile Include="UploadAndDownload\UpLoadFiles.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="XML\XmlHelper.cs" />
+    <Compile Include="XML\XMLProcess.cs" />
+    <Compile Include="Zip\ZipHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Excel\excel.txt" />
+    <Content Include="Log\日志使用说明.txt" />
+    <Content Include="Task\Quartz.NET\quartz_jobs.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Task\Quartz.NET\Qzuartz使用说明.txt" />
+    <Content Include="Task\计划任务使用说明.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Log\log4net.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
