@@ -12,6 +12,7 @@ namespace AudioToolNew
     {
         public static void Register(HttpConfiguration config)
         {
+            log4net.Config.XmlConfigurator.Configure();
             // Web API 配置和服务
             // 将 Web API 配置为仅使用不记名令牌身份验证。
             config.SuppressDefaultHostAuthentication();

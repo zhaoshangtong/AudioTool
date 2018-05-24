@@ -241,9 +241,11 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Commom\BaiduSpeech.cs" />
+    <Compile Include="Commom\FfmpegHelper.cs" />
     <Compile Include="Commom\LogHelper.cs" />
     <Compile Include="Commom\Musicline.cs" />
     <Compile Include="Commom\Musicline2.cs" />
+    <Compile Include="Commom\Musicline3.cs" />
     <Compile Include="Commom\NAudioHelper.cs" />
     <Compile Include="Commom\SampleAggregator.cs" />
     <Compile Include="Commom\TextContrast.cs" />

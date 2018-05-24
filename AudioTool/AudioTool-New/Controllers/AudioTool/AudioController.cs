@@ -33,6 +33,7 @@ namespace AudioToolNew.Controllers.AudioToolNew
                 Task task_max = Task.Factory.StartNew(() => {
                     music.GetTimeSpan(sound_path, word_path, language, splitTime);
                 });
+                
                 Task.WaitAny(task_max);
                 while (!music.isFinish)
                 {
@@ -58,23 +59,31 @@ namespace AudioToolNew.Controllers.AudioToolNew
         /// <returns></returns>
         private async Task<string> SaveFile(Stream stream, string path)
         {
-            //重新存储到一个新的文件目录
-            if (!System.IO.Directory.Exists(Path.GetDirectoryName(path)))
+            try
             {
-                System.IO.Directory.CreateDirectory(Path.GetDirectoryName(path));
-            }
-            //无流数据
-            if (stream == null || stream.Length <= 0) return "";
-            using (FileStream file = new FileStream(path, FileMode.OpenOrCreate))
-            {
-                byte[] bArr = new byte[1024];
-                int size = await stream.ReadAsync(bArr, 0, (int)bArr.Length);
-                while (size > 0)
+                //重新存储到一个新的文件目录
+                if (!System.IO.Directory.Exists(Path.GetDirectoryName(path)))
                 {
-                    await file.WriteAsync(bArr, 0, size);
-                    size = await stream.ReadAsync(bArr, 0, (int)bArr.Length);
+                    System.IO.Directory.CreateDirectory(Path.GetDirectoryName(path));
+                }
+                //无流数据
+                if (stream == null || stream.Length <= 0) return "";
+                using (FileStream file = new FileStream(path, FileMode.OpenOrCreate))
+                {
+                    byte[] bArr = new byte[1024];
+                    int size = await stream.ReadAsync(bArr, 0, (int)bArr.Length);
+                    while (size > 0)
+                    {
+                        await file.WriteAsync(bArr, 0, size);
+                        size = await stream.ReadAsync(bArr, 0, (int)bArr.Length);
+                    }
                 }
             }
+            catch(Exception ex)
+            {
+                LogHelper.Error(ex.Message);
+            }
+            
             //保存到文件服务器
             //UploadFile.PostFile(path);
             return path;
@@ -149,7 +158,19 @@ namespace AudioToolNew.Controllers.AudioToolNew
                 double splitTime = Util.isNotNull(splitTimeString) ? double.Parse(splitTimeString) : 1.5;
                 string sound_path = !dic.ContainsKey("sound_path") ? "" : dic["sound_path"].ToString();
                 string word_path = !dic.ContainsKey("word_path") ? "" : dic["word_path"].ToString();
-                apiResult = SolutionAudioFile(sound_path, word_path, language, splitTime);
+                if (Util.isNotNull(sound_path) && Util.isNotNull(word_path))
+                {
+                    apiResult = SolutionAudioFile(sound_path, word_path, language, splitTime);
+                }
+                else
+                {
+                    return new Models.ApiResult()
+                    {
+                        success = false,
+                        message = "音频文件或原文文件不能为空"
+                    };
+                }
+                
             }
             catch (Exception ex)
             {

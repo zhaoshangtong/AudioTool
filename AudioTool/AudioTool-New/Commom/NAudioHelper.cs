@@ -118,46 +118,53 @@ namespace AudioToolNew.Common
         /// <returns></returns>
         public static string GetWavPath(string filePath)
         {
-            string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "/NewSoundFiles/" + Path.GetFileNameWithoutExtension(filePath) + "/" ;
+            string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "/NewSoundFiles/" + Path.GetFileNameWithoutExtension(filePath) + "/";
             if (!System.IO.Directory.Exists(newFolder))
             {
                 System.IO.Directory.CreateDirectory(newFolder);
             }
-            string newFilePath = newFolder+Path.GetFileNameWithoutExtension(filePath) + "-new.wav";
-            if (filePath.EndsWith(".wav", StringComparison.CurrentCultureIgnoreCase))
+            string newFilePath = newFolder + Path.GetFileNameWithoutExtension(filePath) + "-new.wav";
+            try
             {
-
-                using (var reader = new WaveFileReader(filePath))
+                if (filePath.EndsWith(".wav", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    var newFormat = new WaveFormat(16000, 16, 1); // 16kHz, 16bit，单声道
-                    using (var conversionStream = new WaveFormatConversionStream(newFormat, reader))
+
+                    using (var reader = new WaveFileReader(filePath))
                     {
-                        WaveFileWriter.CreateWaveFile(newFilePath, conversionStream);
+                        var newFormat = new WaveFormat(16000, 16, 1); // 16kHz, 16bit，单声道
+                        using (var conversionStream = new WaveFormatConversionStream(newFormat, reader))
+                        {
+                            WaveFileWriter.CreateWaveFile(newFilePath, conversionStream);
+                        }
                     }
+                }
+                else if (filePath.EndsWith(".mp3", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    using (Mp3FileReader reader = new Mp3FileReader(filePath))
+                    {
+                        var newFormat = new WaveFormat(16000, 16, 1); // 16kHz, 16bit，单声道
+                        using (var conversionStream = new WaveFormatConversionStream(newFormat, reader))
+                        {
+                            WaveFileWriter.CreateWaveFile(newFilePath, conversionStream);
+                        }
+                    }
+                }
+                else
+                {
+                    using (AudioFileReader reader = new AudioFileReader(filePath))
+                    {
+                        var newFormat = new WaveFormat(16000, 16, 1); // 16kHz, 16bit，单声道
+                        using (var conversionStream = new WaveFormatConversionStream(newFormat, reader))
+                        {
+                            WaveFileWriter.CreateWaveFile(newFilePath, conversionStream);
+                        }
+                    }
+
                 }
             }
-            else if (filePath.EndsWith(".mp3", StringComparison.CurrentCultureIgnoreCase))
+            catch(Exception ex)
             {
-                using (Mp3FileReader reader = new Mp3FileReader(filePath))
-                {
-                    var newFormat = new WaveFormat(16000, 16, 1); // 16kHz, 16bit，单声道
-                    using (var conversionStream = new WaveFormatConversionStream(newFormat, reader))
-                    {
-                        WaveFileWriter.CreateWaveFile(newFilePath, conversionStream);
-                    }
-                }
-            }
-            else
-            {
-                using (AudioFileReader reader = new AudioFileReader(filePath))
-                {
-                    var newFormat = new WaveFormat(16000, 16, 1); // 16kHz, 16bit，单声道
-                    using (var conversionStream = new WaveFormatConversionStream(newFormat, reader))
-                    {
-                        WaveFileWriter.CreateWaveFile(newFilePath, conversionStream);
-                    }
-                }
-
+                LogHelper.Error("mp3转wav出错："+ex.Message);
             }
             return newFilePath;
         }

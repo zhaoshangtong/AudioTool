@@ -51,6 +51,7 @@ namespace AudioToolNew.Commom
             string sound_path_mp3 = "";
             try
             {
+                
                 if (sound_path.ToLower().EndsWith(".mp3"))
                 {
                     sound_path_mp3 = sound_path;
@@ -58,6 +59,7 @@ namespace AudioToolNew.Commom
                     sound_path = NAudioHelper.GetWavPath(sound_path);
                 }
                 inputStream = new AudioFileReader(sound_path);
+                
                 //WAV文件读取
                 WAVReader reader = new WAVReader();
                 reader.GetTimeSpan(sound_path, out voicePoint, out voiceMilliSecond, splitTime);
@@ -68,8 +70,11 @@ namespace AudioToolNew.Commom
                 {
                     voicePoint.Add(inputStream.TotalTime);
                 }
+                LogHelper.Info("时间戳获取：成功");
+                //string totalTime=FfmpegHelper.getMediaDuration(sound_path);
                 int _name = 1;//命名
                 //一个时间点对应一段音频对应一段文字
+                LogHelper.Info("语音转文字：开始");
                 for (int i = 0; i < voicePoint.Count; i += 2)
                 {
                     GetBaiduSpeech(voicePoint[i], voicePoint[i + 1],  sound_path, _name, language, splitTime);
@@ -79,7 +84,6 @@ namespace AudioToolNew.Commom
                 originalText = NPOIHelper.ExcuteWordText(word_path);
                 //word原文的集合
                 results=GetTextContrast(voiceFiles.ToArray(), voiceMilliSecond.ToArray(),baidu_text.ToArray(), originalText,language);
-
             }
             catch (Exception ex)
             {
@@ -148,7 +152,7 @@ namespace AudioToolNew.Commom
             //将文件保存到新的文件夹（sound_path是原音频路径，newFolder是新的小音频路径，使用完成后将上传到服务器成功的音频删除）
             string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "/NewSoundFiles/" + Path.GetFileNameWithoutExtension(sound_path) + "/";
             AudioFileReader reader=new AudioFileReader(sound_path);
-            //AudioFileReader _reader = null;//超过60s音频截取小音频
+            AudioFileReader _reader = null;//超过60s音频截取小音频
             try
             {
                 #region 为截取音频做准备
@@ -200,8 +204,8 @@ namespace AudioToolNew.Commom
                 if (span == TimeSpan.FromSeconds(50))//音频大于60s,只截取50s
                 {
                     //小音频
-                    //_reader = new AudioFileReader(sound_path);
-                    var _trimed = reader.Skip(startMilliSecond).Take(span);
+                    _reader = new AudioFileReader(sound_path);
+                    var _trimed = _reader.Skip(startMilliSecond).Take(span);
                     //保存新的音频文件
                     string _fileName = "_" + Path.GetFileNameWithoutExtension(sound_path) + "_" + i +".pcm";//重命名文件
                     _newFile = newFolder + _fileName;
@@ -228,7 +232,11 @@ namespace AudioToolNew.Commom
             {
                 reader.Close();
                 reader.Dispose();
-                
+                if (_reader != null)
+                {
+                    _reader.Close();
+                    _reader.Dispose();
+                }
                 //删除文件
                 if (File.Exists(_newFile))
                 {

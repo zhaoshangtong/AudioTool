@@ -9,6 +9,9 @@ namespace AudioToolNew.Common
 {
     public class WAVReader
     {
+        public int channel { get {return num_Channels; } }
+        public int rate { get { return SamplesPerSec; } }
+        public int bit { get { return BitsPerSample; } }
         private string Id; //文件标识
         private double Size;  //文件大小
         private string Type; //文件类型
