@@ -45,9 +45,18 @@ namespace AudioToolNew.Controllers.AudioToolNew
                 {
                     Thread.Sleep(10);
                 }
-                apiResult.data = new { music.results,music.originalText};
-                apiResult.success = true;
-                apiResult.message = "转换成功";
+                if (music.results == null)
+                {
+                    apiResult.success = false;
+                    apiResult.message = "转换失败";
+                }
+                else
+                {
+                    apiResult.data = new { music.results, music.originalText };
+                    apiResult.success = true;
+                    apiResult.message = "转换成功";
+                }
+               
             }
             catch (Exception ex)
             {
