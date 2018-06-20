@@ -106,6 +106,51 @@ namespace AudioToolNew.Commom
             }
             return false;
         }
+        /// <summary>
+        /// 音频截取
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="start"></param>
+        /// <param name="continues"></param>
+        /// <returns></returns>
+        public static bool CutAudioFile2(string input, string output, TimeSpan start, TimeSpan end)
+        {
+            string ffmpegPath = System.AppDomain.CurrentDomain.BaseDirectory + "MediaConvert\\";
+            string error = "";
+            string szExeFilePath = ffmpegPath + "ffmpeg.exe ";
+            Process p = new Process();
+            p.StartInfo.FileName = szExeFilePath;
+            p.StartInfo.Arguments = " -i " + input + " -vn -acodec copy -ss " + start + " -to " + end + " " + output;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardInput = true;     //重定向输入（一定是true） 
+            p.StartInfo.RedirectStandardOutput = true;    //重定向输出    
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.CreateNoWindow = false;
+            try
+            {
+                if (p.Start())//开始进程
+                {
+                    error = p.StandardError.ReadToEnd();//读取进程的输出,StandardOutput不行，因为ffmpeg输出都是StandardError
+                    p.WaitForExit();
+                    p.Close();
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+            finally
+            {
+                if (p != null)
+                { p.Close(); }
+            }
+            if (System.IO.File.Exists(output))
+            {
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// 音频格式转换

@@ -34,6 +34,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\AudioToolNew.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -241,13 +242,18 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Commom\BaiduSpeech.cs" />
+    <Compile Include="Commom\CmdServices.cs" />
+    <Compile Include="Commom\CommonServices.cs" />
     <Compile Include="Commom\FfmpegHelper.cs" />
+    <Compile Include="Commom\FileServices.cs" />
     <Compile Include="Commom\LogHelper.cs" />
     <Compile Include="Commom\Musicline.cs" />
     <Compile Include="Commom\Musicline2.cs" />
     <Compile Include="Commom\Musicline3.cs" />
     <Compile Include="Commom\NAudioHelper.cs" />
     <Compile Include="Commom\SampleAggregator.cs" />
+    <Compile Include="Commom\SppechEvaluation.cs" />
+    <Compile Include="Commom\sys.cs" />
     <Compile Include="Commom\TextContrast.cs" />
     <Compile Include="Commom\UploadFile.cs" />
     <Compile Include="Commom\Util.cs" />
@@ -302,6 +308,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Areas\HelpPage\Views\Help\ApiList.cshtml" />
     <None Include="Properties\PublishProfiles\AudioNew.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />

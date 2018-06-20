@@ -52,7 +52,7 @@ namespace AudioToolNew.Common
         /// <param name="newFilePath"></param>
         public static AudioFileReader ConvertToWav(string filePath)
         {
-            string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "/NewSoundFiles/" + Path.GetFileNameWithoutExtension(filePath) + "/";
+            string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "NewSoundFiles/" + Path.GetFileNameWithoutExtension(filePath) + "/";
             //重新存储到一个新的文件目录
             if (!System.IO.Directory.Exists(newFolder))
             {
@@ -118,7 +118,7 @@ namespace AudioToolNew.Common
         /// <returns></returns>
         public static string GetWavPath(string filePath)
         {
-            string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "/NewSoundFiles/" + Path.GetFileNameWithoutExtension(filePath) + "/";
+            string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "NewSoundFiles/" + Path.GetFileNameWithoutExtension(filePath) + "/";
             if (!System.IO.Directory.Exists(newFolder))
             {
                 System.IO.Directory.CreateDirectory(newFolder);
@@ -177,7 +177,7 @@ namespace AudioToolNew.Common
         /// <returns></returns>
         public static string GetPcmPath(string filePath)
         {
-            string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "/NewSoundFiles/" + Path.GetFileNameWithoutExtension(filePath) + "/";
+            string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "NewSoundFiles/" + Path.GetFileNameWithoutExtension(filePath) + "/";
             if (!System.IO.Directory.Exists(newFolder))
             {
                 System.IO.Directory.CreateDirectory(newFolder);
@@ -199,7 +199,7 @@ namespace AudioToolNew.Common
             {
                 return "";
             }
-            return newFilePath;
+            return newFilePath.Replace("/","\\");
         }
     }
 }

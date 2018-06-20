@@ -3,13 +3,10 @@
 @using System.Web.Http.Description
 @using System.Collections.ObjectModel
 @using AudioToolNew.Areas.HelpPage.Models
-@model Collection<ApiDescription>
+@model List<string>
 
 @{
-    ViewBag.Title = "ASP.NET Web API Help Page";
-
-    // Group APIs by controller
-    ILookup<HttpControllerDescriptor, ApiDescription> apiGroups = Model.ToLookup(api => api.ActionDescriptor.ControllerDescriptor);
+    ViewBag.Title = "接口说明文档";
 }
 
 <link type="text/css" href="~/Areas/HelpPage/HelpPage.css" rel="stylesheet" />
@@ -23,16 +20,22 @@
 <div id="body" class="help-page">
     <section class="featured">
         <div class="content-wrapper">
-            <h2>Introduction</h2>
+            <h2>介绍</h2>
             <p>
-                Provide a general description of your APIs here.
+                在这里提供关于API的描述说明.
             </p>
         </div>
     </section>
     <section class="content-wrapper main-content clear-fix">
-        @foreach (var group in apiGroups)
-        {
-            @Html.DisplayFor(m => group, "ApiGroup")
-        }
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-3">
+                    <h2>@item</h2>
+                    <p><a class="btn btn-default" href="@Url.Action("ApiList", "Help", new { dirName = item })">查看接口 &raquo;</a></p>
+                </div>
+            }
+        </div>
     </section>
+
 </div>

@@ -156,7 +156,7 @@ namespace AudioToolNew.Commom
             string _newFile = "";
             bool need_delete = true;
             //将文件保存到新的文件夹（sound_path是原音频路径，newFolder是新的小音频路径，使用完成后将上传到服务器成功的音频删除）
-            string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "/NewSoundFiles/" + Path.GetFileNameWithoutExtension(sound_path) + "/";
+            string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "NewSoundFiles/" + Path.GetFileNameWithoutExtension(sound_path) + "/";
             try
             {
                 #region 为截取音频做准备

@@ -95,7 +95,7 @@ namespace AudioToolNew.Commom
                 inputStream.Dispose();
                 isFinish = true;
                 //删除MP3文件
-                if(Util.isNotNull(sound_path_mp3)&& File.Exists(sound_path_mp3))
+                if (Util.isNotNull(sound_path_mp3) && File.Exists(sound_path_mp3))
                 {
                     File.Delete(sound_path_mp3);
                     string mp3_folder = Path.GetDirectoryName(sound_path_mp3);
@@ -115,7 +115,7 @@ namespace AudioToolNew.Commom
                         Directory.Delete(word_folder);
                     }
                 }
-                
+
                 //删除文件夹，删除原音频文件
                 if (File.Exists(sound_path))
                 {
@@ -127,8 +127,6 @@ namespace AudioToolNew.Commom
                         Directory.Delete(sound_folder);
                     }
                 }
-               
-                
             }
         }
 
@@ -150,7 +148,8 @@ namespace AudioToolNew.Commom
             string pcm_newFile = "";
             bool need_delete = true;
             //将文件保存到新的文件夹（sound_path是原音频路径，newFolder是新的小音频路径，使用完成后将上传到服务器成功的音频删除）
-            string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "/NewSoundFiles/" + Path.GetFileNameWithoutExtension(sound_path) + "/";
+            string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "NewSoundFiles/" + Path.GetFileNameWithoutExtension(sound_path) + "/";
+            newFolder = newFolder.Replace("/", "\\");
             AudioFileReader reader=new AudioFileReader(sound_path);
             AudioFileReader _reader = null;//超过60s音频截取小音频
             try
@@ -265,7 +264,6 @@ namespace AudioToolNew.Commom
                         Directory.Delete(pcm_folder);
                     }
                 }
-                
             }
         }
 
@@ -305,7 +303,7 @@ namespace AudioToolNew.Commom
                 var trimed = reader.Skip(startMilliSecond).Take(endMilliSecond - startMilliSecond);
                 //保存新的音频文件
                 string fileName = Path.GetFileNameWithoutExtension(sound_path) +"_"+ i +Path.GetExtension(sound_path);//重命名文件
-                string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "/NewSoundFiles/" + Path.GetFileNameWithoutExtension(sound_path) + "/";
+                string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "NewSoundFiles/" + Path.GetFileNameWithoutExtension(sound_path) + "/";
                 //重新存储到一个新的文件目录
                 if (!System.IO.Directory.Exists(newFolder))
                 {

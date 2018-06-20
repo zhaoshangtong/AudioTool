@@ -76,7 +76,7 @@ namespace AudioToolNew.Common
                     if (url == "")//上传失败，重新上传
                     {
                         string fileName = Path.GetFileNameWithoutExtension(sound_path) + i + ".wav";//重命名文件
-                        string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "/NewSoundFiles/" + Path.GetFileNameWithoutExtension(sound_path) + "/";
+                        string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "NewSoundFiles/" + Path.GetFileNameWithoutExtension(sound_path) + "/";
                         string newFile = newFolder + fileName;
                         //绝对路径
                         string path_absolute = context.Server.MapPath("/NewSoundFiles/" + Path.GetFileNameWithoutExtension(sound_path) + "/" + fileName);
@@ -734,7 +734,7 @@ namespace AudioToolNew.Common
                 var trimed = reader.Skip(startMilliSecond).Take(endMilliSecond - startMilliSecond);
                 //保存新的音频文件
                 string fileName = Path.GetFileNameWithoutExtension(sound_path) + i + ".wav";//重命名文件
-                string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "/NewSoundFiles/" + Path.GetFileNameWithoutExtension(sound_path) + "/";
+                string newFolder = System.AppDomain.CurrentDomain.BaseDirectory + "NewSoundFiles/" + Path.GetFileNameWithoutExtension(sound_path) + "/";
                 //重新存储到一个新的文件目录
                 if (!System.IO.Directory.Exists(newFolder))
                 {

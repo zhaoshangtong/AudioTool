@@ -69,7 +69,7 @@ namespace Baidu.Aip.Speech
             {
                 DateTime YouXRQ;
                 // 读取XML文件中的数据，并显示出来 ，注意文件路径 
-                string folder = System.AppDomain.CurrentDomain.BaseDirectory + "/Baidu/";
+                string folder = System.AppDomain.CurrentDomain.BaseDirectory + "Baidu/";
                 if (!Directory.Exists(folder))
                 {
                     Directory.CreateDirectory(folder);

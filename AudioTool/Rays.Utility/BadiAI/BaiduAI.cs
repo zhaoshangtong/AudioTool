@@ -59,5 +59,43 @@ namespace Rays.Utility.BadiAI
             }
             return returnStr;
         }
+
+        // 识别本地文件
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filePath">文件地址</param>
+        /// <param name="fileType">文件类型</param>
+        /// <param name="rate">采样率</param>
+        /// <param name="lan">识别语言，默认lan=zh,设置为lan=en后，返回结果一定为英文</param>
+        public List<string> AsrData(string filePath, string fileType, int rate, string lan)
+        {
+            var data = File.ReadAllBytes(filePath);
+            Dictionary<string, object> para = new Dictionary<string, object>();
+            para.Add("lan", lan);
+            if ("pcm".Equals(fileType) || "wav".Equals(fileType))
+            {
+                string API_KEY = "PhUlgrvjGmIaSuPAvn5CWbAE";
+                string SECRET_KEY = "fDZXemDEyPc6dcAfT8YxkgQuN29kVjwC";
+                Asr asr = new Asr(API_KEY, SECRET_KEY);
+                JObject result = asr.Recognize(data, fileType, rate, para);
+                List<string> res = new List<string>();
+                if ("0".Equals(result["err_no"].ToString()))
+                {
+                    JArray jaResult = JArray.Parse(result["result"].ToString());
+                    foreach (JToken jt in jaResult)
+                    {
+                        res.Add(jt.ToString());
+                    }
+                }
+                return res;
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
     }
 }

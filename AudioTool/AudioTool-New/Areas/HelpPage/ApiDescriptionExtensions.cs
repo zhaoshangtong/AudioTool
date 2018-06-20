@@ -35,5 +35,27 @@ namespace AudioToolNew.Areas.HelpPage
             }
             return friendlyPath.ToString();
         }
+        /// <summary>
+        /// 获取项目目录信息（area字段）
+        /// </summary>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        public static string GetAreaName(this ApiDescription description)
+        {
+            //获取controller的fullname
+            string controllerFullName = description.ActionDescriptor.ControllerDescriptor.ControllerType.FullName;
+            //匹配目录
+            string[] dirName = controllerFullName.Split('.');
+            //匹配areaName/categoryName
+            string areaName = "";
+            if (dirName.Length > 3)
+            {
+
+                areaName = dirName[2];
+
+            }
+            return areaName;
+        }
+
     }
 }
