@@ -60,7 +60,7 @@ public class Util
         else
             return ip;
     }
-   
+
     /// <summary>
     /// 获得服务器的域名路径，包含端口
     /// </summary>
@@ -882,8 +882,100 @@ public class Util
     }
     #endregion
 
-    
+    #region 读取txt
+    /// <summary>
+    /// 读取txt
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static string ReadTxt(string path)
+    {
+        StringBuilder line = new StringBuilder();
+        //FileStream file = new FileStream(path, FileMode.Open);
+        //var coding = GetEncoding(file, Encoding.Default);
+        //file.Close();
+        //file.Dispose();
+        using (StreamReader sr = new StreamReader(path, Encoding.UTF8))
+        {
+            string text;
+            while (isNotNull(text = sr.ReadLine()))
+            {
+                string _text = "";
+                //移除txt/lrc的时间戳
+                int start = text.Trim().IndexOf('[');
+                int end = text.Trim().IndexOf(']');
+                if (start > 0)
+                {
+                    _text += text.Substring(0, start);
+                }
+                if (end < text.Trim().Length - 1)
+                {
+                    _text += text.Substring(end + 1, text.Trim().Length - end - 1);
+                }
+                if (isNotNull(_text))
+                {
+                    line.Append(_text + "|");
+                }
+            }
+        }
+        return line.ToString();
+    }
 
+    #endregion
+
+    #region
+    /// <summary>
+    /// 取得一个文本文件流的编码方式。
+    /// </summary>
+    /// <param name="stream">文本文件流。</param>
+    /// <param name="defaultEncoding">默认编码方式。当该方法无法从文件的头部取得有效的前导符时，将返回该编码方式。</param>
+    /// <returns></returns>
+    public static Encoding GetEncoding(Stream stream, Encoding defaultEncoding)
+    {
+        Encoding targetEncoding = defaultEncoding;
+        if (stream != null && stream.Length >= 2)
+        {
+            //保存文件流的前4个字节
+            byte byte1 = 0;
+            byte byte2 = 0;
+            byte byte3 = 0;
+            byte byte4 = 0;
+            //保存当前Seek位置
+            long origPos = stream.Seek(0, SeekOrigin.Begin);
+            stream.Seek(0, SeekOrigin.Begin);
+            int nByte = stream.ReadByte();
+            byte1 = Convert.ToByte(nByte);
+            byte2 = Convert.ToByte(stream.ReadByte());
+            if (stream.Length >= 3)
+            {
+                byte3 = Convert.ToByte(stream.ReadByte());
+            }
+            if (stream.Length >= 4)
+            {
+                byte4 = Convert.ToByte(stream.ReadByte());
+            }
+            //根据文件流的前4个字节判断Encoding
+            //Unicode {0xFF, 0xFE};
+            //BE-Unicode {0xFE, 0xFF};
+            //UTF8 = {0xEF, 0xBB, 0xBF};
+            if (byte1 == 0xFE && byte2 == 0xFF)//UnicodeBe
+            {
+                targetEncoding = Encoding.BigEndianUnicode;
+            }
+            if (byte1 == 0xFF && byte2 == 0xFE && byte3 != 0xFF)//Unicode
+            {
+                targetEncoding = Encoding.Unicode;
+            }
+            if (byte1 == 0xEF && byte2 == 0xBB && byte3 == 0xBF)//UTF8
+            {
+                targetEncoding = Encoding.UTF8;
+            }
+            //恢复Seek位置　　　 
+            stream.Seek(origPos, SeekOrigin.Begin);
+        }
+        return targetEncoding;
+    }
+    #endregion
 }
 
 

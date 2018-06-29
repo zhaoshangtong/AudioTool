@@ -50,7 +50,7 @@ namespace AudioToolNew.Commom
                 //enWords[i] = replaceSymbol(enWords[i]);
                 for (int j = 0; j < words.Length; j++)
                 {
-                    if (words[j]==enWords[i])
+                    if (words[j] == enWords[i])
                     {
                         accuracyNum += 1;
                         break;
@@ -148,16 +148,21 @@ namespace AudioToolNew.Commom
         /// <returns></returns>
         public static string[] getSentenceWords(string speechText)
         {
-            speechText = speechText.Replace(",", ", ");
-            speechText = speechText.Replace(".", ". ");
-            speechText = speechText.Replace("?", "? ");
-            speechText = speechText.Replace("!", "! ");
-            speechText = speechText.Replace("…", "… ");
-            speechText = speechText.Replace("？", "？ ");
-            speechText = speechText.Replace("(", "( ");
-            speechText = speechText.Replace(")", ") ");
-            speechText = speechText.Replace("！", "！ ");
-            speechText = speechText.Replace("\"", "\" ");
+            speechText = speechText.Replace(",", " , ");
+            speechText = speechText.Replace(".", " . ");
+            speechText = speechText.Replace("，", " ， ");
+            speechText = speechText.Replace("。", " 。 ");
+            speechText = speechText.Replace("?", " ? ");
+            speechText = speechText.Replace("!", " ! ");
+            speechText = speechText.Replace("…", " … ");
+            speechText = speechText.Replace("？", " ？ ");
+            speechText = speechText.Replace("(", " ( ");
+            speechText = speechText.Replace("（", " （ ");
+            speechText = speechText.Replace("）", " ） ");
+            speechText = speechText.Replace("！", " ！ ");
+            speechText = speechText.Replace("\"", " \" ");
+            speechText = speechText.Replace("“", " “ ");
+            speechText = speechText.Replace("”", " ” ");
             string[] words = speechText.Split(' ');
             //string[] words = Regex.Split(speechText, "[,.:\\s!?！？，。]");           
             List<string> list = new List<string>();
@@ -178,7 +183,7 @@ namespace AudioToolNew.Commom
         /// <returns></returns>
         public static char[] getSentenceWordsZh(string speechText)
         {
-            speechText= Regex.Replace(speechText, @"\p{P}", "");
+            speechText = Regex.Replace(speechText, @"\p{P}", "");
             char[] words = speechText.ToCharArray();
             //string[] words = Regex.Split(speechText, "[,.:\\s!?！？，。]");           
             List<char> list = new List<char>();
@@ -217,7 +222,12 @@ namespace AudioToolNew.Commom
             int seconds = int.Parse(times[0]) * 3600 + int.Parse(times[1]) * 60 + int.Parse(times[2]);
             return seconds;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enText"></param>
+        /// <param name="speechResult"></param>
+        /// <returns></returns>
         public static string getSentenceAccuracy(string enText, List<string> speechResult)
         {
             string json = "";
@@ -250,7 +260,86 @@ namespace AudioToolNew.Commom
             json += "]";
             return json;
         }
+        /// <summary>
+        /// 获取返回句子（英文）
+        /// </summary>
+        /// <param name="enText"></param>
+        /// <param name="speechResult"></param>
+        /// <returns></returns>
+        public static string getSentenceAccuracy2(string enText, List<string> speechResult)
+        {
+            string json = "";
+            json = "[";
+            string[] enWords = getSentenceWords(enText);//对比的时候去掉符号，可能修改，enWords1为原句子
+            string[] enWords1 = getSentenceWords(enText);
+            bool flag = false;
+            for (int i = 0; i < enWords.Length; i++)
+            {
+                //enWords[i] = replaceSymbol(enWords[i]);//去掉符号
+                //按照上面的截取规则，标点符号都在最后一个
+                for (int j = 0; j < speechResult.Count; j++)
+                {
+                    flag = false;
+                    if (speechResult[j].IndexOf(enWords[i].ToLower()) > -1)
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag)
+                {
+                    json += "{\"word\":\"" + enWords1[i] + "\",\"isError\":false},";
+                }
+                else
+                {
+                    json += "{\"word\":\"" + enWords1[i] + "\",\"isError\":true},";
+                }
+            }
+            json = json.TrimEnd(',');
+            json += "]";
+            return json;
+        }
 
+        /// <summary>
+        /// 获取返回句子（中文）
+        /// </summary>
+        /// <param name="enText"></param>
+        /// <param name="speechResult"></param>
+        /// <returns></returns>
+        public static string getSentenceAccuracyZh(string enText, List<string> speechResult)
+        {
+            string json = "";
+            json = "[";
+            //string[] enWords = getSentenceWords(enText);//对比的时候去掉符号，可能修改，enWords1为原句子
+            char[] enWordsZh = enText.ToCharArray();
+            char[] enWordsZh1 = enText.ToCharArray();
+            //string[] enWords1 = getSentenceWords(enText);
+            bool flag = false;
+            for (int i = 0; i < enWordsZh.Length; i++)
+            {
+                //按照上面的截取规则，标点符号都在最后一个
+                for (int j = 0; j < speechResult.Count; j++)
+                {
+                    flag = false;
+                    if (speechResult[j].IndexOf(enWordsZh[i]) > -1)
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag)
+                {
+                    json += "{\"word\":\"" + enWordsZh1[i] + "\",\"isError\":false},";
+                }
+                else
+                {
+                    json += "{\"word\":\"" + enWordsZh1[i] + "\",\"isError\":true},";
+                }
+            }
+            json = json.TrimEnd(',');
+            json += "]";
+            return json;
+        }
         private static string replaceSymbol(string sentence)
         {
             sentence = sentence.Replace(",", "");
