@@ -403,7 +403,14 @@ namespace AudioToolNew.Controllers.AudioToolNew
                     file.SaveAs(otherFile);
                     //转换成wav\
                     LogHelper.Info("MP3转wav");
-                    speechFilePath = CmdServices.mp32wav(otherFile);
+                    string mp3_folder = HttpContext.Current.Server.MapPath("/upload/") + sys.getDateStr() + "\\";
+                    if (Directory.Exists(mp3_folder))
+                    {
+                        Directory.CreateDirectory(mp3_folder);
+                    }
+                    speechFilePath = mp3_folder + sys.getRandomStr() + ".wav";
+                    //speechFilePath = CmdServices.mp32wav(otherFile);
+                    FfmpegHelper.ChangeFileType(otherFile, speechFilePath);
                     LogHelper.Info("百度转语音开始");
                     speechResult = ai.AsrData(speechFilePath, CommonServices.getFileType(speechFilePath), 16000, lan);
                 }
