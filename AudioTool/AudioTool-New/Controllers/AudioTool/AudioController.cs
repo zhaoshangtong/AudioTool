@@ -4,6 +4,7 @@ using AudioToolNew.Models;
 using Rays.Utility.BadiAI;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -37,17 +38,33 @@ namespace AudioToolNew.Controllers.AudioToolNew
             {
                 Musicline2 music = new Musicline2();
                 Task task_max = Task.Factory.StartNew(() => {
-                    music.GetTimeSpan(sound_path, word_path, language, splitTime);
+                    if (Path.GetExtension(word_path).ToLower().Contains("lrc"))
+                    {
+                        music.GetTimeSpanLrc(sound_path, word_path, language, splitTime);
+                    }
+                    else
+                    {
+                        music.GetTimeSpan(sound_path, word_path, language, splitTime);
+                    }
+                    
                 });
-
+                
                 Task.WaitAny(task_max);
                 while (!music.isFinish)
                 {
                     Thread.Sleep(10);
                 }
-                apiResult.data = new { music.results, music.originalText };
-                apiResult.success = true;
-                apiResult.message = "转换成功";
+                if (Util.isNotNull(music.results))
+                {
+                    apiResult.data = new { music.results, music.originalText };
+                    apiResult.success = true;
+                    apiResult.message = "转换成功";
+                }
+                else
+                {
+                    apiResult.success = false;
+                    apiResult.message = "转换失败";
+                }
             }
             catch (Exception ex)
             {
@@ -61,7 +78,7 @@ namespace AudioToolNew.Controllers.AudioToolNew
         {
             string txt = Util.ReadTxt(file_path);
             string[] originalList = txt.Replace(".", ".|").Replace("。", "。|").Replace("?", "?|").Replace("？", "？|").Replace("！", "！|").Replace("!", "!|").Replace("……", "……|").Split('|').Where(o => o != " " && o != "").ToArray();
-            return new Models.ApiResult() { success = true, message = txt };
+            return new Models.ApiResult() {success=true,message=txt };
         }
 
         /// <summary>
@@ -92,7 +109,7 @@ namespace AudioToolNew.Controllers.AudioToolNew
                     }
                 }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 LogHelper.Error(ex.Message);
             }
@@ -134,10 +151,10 @@ namespace AudioToolNew.Controllers.AudioToolNew
                         if (content.Headers.ContentDisposition.Name.Contains("wordFile"))
                         {
                             fileStream_word = await content.ReadAsStreamAsync();
-                            LogHelper.Info("wordFile流长度：" + fileStream_word.Length);
+                            LogHelper.Info("wordFile流长度："+ fileStream_word.Length);
                             //string fileName = content.Headers.ContentDisposition.FileName.Replace("\"", "");
-                            string fileName = "word_" + sys.getRandomStr() + Path.GetExtension(content.Headers.ContentDisposition.FileName.Replace("\"", ""));
-                            string word_filePath = folder + sys.getRandomStr() + "_word" + "/" + fileName;
+                            string fileName = "word_"+sys.getRandomStr() + Path.GetExtension(content.Headers.ContentDisposition.FileName.Replace("\"", ""));
+                            string word_filePath = folder + sys.getRandomStr()+"_word"+ "/" +fileName ;
                             word_filePath = await SaveFile(fileStream_word, word_filePath.Replace("/", "\\"));
                             dic.Add("word_path", word_filePath);
                             fileStream_word.Close();
@@ -176,7 +193,7 @@ namespace AudioToolNew.Controllers.AudioToolNew
                 LogHelper.Info("word_path:" + word_path);
                 if (Util.isNotNull(sound_path) && Util.isNotNull(word_path))
                 {
-                    if (Path.GetExtension(word_path).Contains("doc") || Path.GetExtension(word_path).Contains("docx") || Path.GetExtension(word_path).Contains("txt") || Path.GetExtension(word_path).Contains("lrc"))
+                    if(Path.GetExtension(word_path).Contains("doc")|| Path.GetExtension(word_path).Contains("docx") || Path.GetExtension(word_path).Contains("txt") || Path.GetExtension(word_path).Contains("lrc"))
                     {
                         apiResult = SolutionAudioFile(sound_path, word_path, language, splitTime);
                     }
@@ -188,7 +205,7 @@ namespace AudioToolNew.Controllers.AudioToolNew
                             message = "暂时不支持其他格式的原文文件，请上传word/txt/lrc文档,编码格式utf8"
                         };
                     }
-
+                    
                 }
                 else
                 {
@@ -198,7 +215,7 @@ namespace AudioToolNew.Controllers.AudioToolNew
                         message = "音频文件或原文文件不能为空"
                     };
                 }
-
+                
             }
             catch (Exception ex)
             {
@@ -212,7 +229,7 @@ namespace AudioToolNew.Controllers.AudioToolNew
         #region 音频截取
         /// <summary>
         /// 音频截取
-        /// timespans:单位s，以逗号拼接。file：音频文件
+        /// timespans:单位s，以逗号拼接(开始截取的时间)。file：音频文件
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -236,8 +253,8 @@ namespace AudioToolNew.Controllers.AudioToolNew
                     System.IO.Directory.CreateDirectory(Path.GetDirectoryName(folder));
                 }
                 //先保存文件
-                input = folder + "cutAudio_" + sys.getRandomStr() + Path.GetExtension(file.FileName);
-                input = input.Replace("/", "\\");
+                input = folder+"cutAudio_"+sys.getRandomStr()+Path.GetExtension(file.FileName);
+                input = input.Replace("/","\\");
                 file.SaveAs(input);
                 string timespans = HttpContext.Current.Request.Form["timespans"];
                 string[] times = timespans.Split(new char[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
@@ -267,7 +284,7 @@ namespace AudioToolNew.Controllers.AudioToolNew
                             TimeSpan _start = TimeSpan.FromSeconds(double.Parse(start));
                             end = cut_times[i];
                             TimeSpan _end = TimeSpan.FromSeconds(double.Parse(end) - double.Parse(start));
-                            string output = folder + i + "_cutAudio_" + sys.getRandomStr() + Path.GetExtension(file.FileName);
+                            string output = folder + i + "_cutAudio_" + sys.getRandomStr()+Path.GetExtension(file.FileName);
                             output = output.Replace("/", "\\");
                             output_list.Add(output);
                             bool is_success = FfmpegHelper.CutAudioFile(input, output, _start, _end);
@@ -373,7 +390,9 @@ namespace AudioToolNew.Controllers.AudioToolNew
                     file.SaveAs(silkFile);
                     speechFilePath = CmdServices.silk2wav(silkFile);
                     string fileType = CommonServices.getFileType(speechFilePath);
-                    speechResult = ai.AsrData(speechFilePath, fileType, 16000, lan);
+                    //speechResult = ai.AsrData(speechFilePath, fileType, 16000, lan);
+                    FileInfo file_info = new FileInfo(speechFilePath);
+                    speechResult = Util.GetSpeechResult(file_info, lan);
                 }
                 else if (fileString.IndexOf("webm") > -1)
                 {
@@ -384,6 +403,8 @@ namespace AudioToolNew.Controllers.AudioToolNew
                     //2.对GkXfo59ChoEBQv...字符串解码为webm文件
                     //3.webm文件转wav文件  
                     #endregion
+
+                    LogHelper.Info("小程序音频评分开始："+DateTime.Now);
                     fileString = fileString.Substring(fileString.IndexOf(',') + 1);
                     byte[] bytes = Convert.FromBase64String(fileString);
                     string webmFile = CommonServices.createFileFullPath("webm");
@@ -394,7 +415,10 @@ namespace AudioToolNew.Controllers.AudioToolNew
                     }
                     speechFilePath = CmdServices.webm2wav(webmFile);
                     string fileType = CommonServices.getFileType(speechFilePath);
-                    speechResult = ai.AsrData(speechFilePath, fileType, 16000, lan);
+                    //speechResult = ai.AsrData(speechFilePath, fileType, 16000, lan);
+                    LogHelper.Info("小程序音频评分结束：" + DateTime.Now);
+                    FileInfo file_info = new FileInfo(speechFilePath);
+                    speechResult = Util.GetSpeechResult(file_info, lan);
                 }
                 else//mp3或者wav，如果不是16000HZ，16bit，单声道，都转格式
                 {
@@ -408,13 +432,15 @@ namespace AudioToolNew.Controllers.AudioToolNew
                     {
                         Directory.CreateDirectory(mp3_folder);
                     }
-                    speechFilePath = mp3_folder + sys.getRandomStr() + ".wav";
+                    speechFilePath = mp3_folder+sys.getRandomStr()+".wav";
                     //speechFilePath = CmdServices.mp32wav(otherFile);
                     FfmpegHelper.ChangeFileType(otherFile, speechFilePath);
                     LogHelper.Info("百度转语音开始");
-                    speechResult = ai.AsrData(speechFilePath, CommonServices.getFileType(speechFilePath), 16000, lan);
+                    //speechResult = ai.AsrData(speechFilePath, CommonServices.getFileType(speechFilePath), 16000, lan);
+                    FileInfo file_info = new FileInfo(speechFilePath);
+                    speechResult = Util.GetSpeechResult(file_info, lan);
                 }
-
+                
                 string duration = FileServices.getMediaDuration(speechFilePath);
                 int seconds = SppechEvaluation.timeToSecond(duration);
                 //评分
@@ -424,10 +450,11 @@ namespace AudioToolNew.Controllers.AudioToolNew
                 int integritySocre = 0;
                 int tempScore = 0;
                 string sentence = "";
-                LogHelper.Info("百度转语音完成，准备计算分数。seconds：" + seconds + ";count:" + speechResult.Count);
+                //LogHelper.Info("百度转语音完成，准备计算分数。seconds：" + seconds+";count:"+ speechResult.Count);
                 if (speechResult == null)
                 {
-                    apiResult.data = new { totalSocre, accuracySocre, fluencySocre, integritySocre, speechFilePath = UploadFile.PostFile(speechFilePath) };
+                    sentence = SppechEvaluation.getSentenceAccuracy3(enText, speechResult);
+                    apiResult.data = new { totalSocre, accuracySocre, fluencySocre, integritySocre, speechFilePath = UploadFile.PostFile(speechFilePath), sentence };
                 }
                 else
                 {
@@ -479,6 +506,10 @@ namespace AudioToolNew.Controllers.AudioToolNew
                         }
                     }
                     totalSocre = (int)((float)(accuracySocre * 60 + fluencySocre * 20 + integritySocre * 20) / 100);
+                    if (speechResult.Count == 0)
+                    {
+                        sentence = SppechEvaluation.getSentenceAccuracy3(enText, speechResult);
+                    }
                     //return "{\"success\":true,\"message\":\"\",\"data\":{\"totalSocre\":\"" + totalSocre + "\",\"accuracySocre\":\"" + accuracySocre + "\",\"fluencySocre\":\"" + fluencySocre + "\",\"integritySocre\":\"" + integritySocre + "\",\"speechFilePath\":\"" + FileServices.urlConvertor(speechFilePath) + "\",\"speechSeconds\":\"" + seconds.ToString() + "\",\"sentence\":" + sentence + "}}";
                     apiResult.data = new { totalSocre, accuracySocre, fluencySocre, integritySocre, speechFilePath = UploadFile.PostFile(speechFilePath), speechSeconds = seconds.ToString(), sentence };
                 }
@@ -487,10 +518,10 @@ namespace AudioToolNew.Controllers.AudioToolNew
             }
             catch (Exception ex)
             {
-                return new Models.ApiResult()
+                return new ApiResult()
                 {
-                    success = false,
-                    message = ex.Message
+                    success=false,
+                    message=ex.Message
                 };
             }
             finally
@@ -522,5 +553,98 @@ namespace AudioToolNew.Controllers.AudioToolNew
         }
         #endregion
 
+        #region 音频合并
+        /// <summary>
+        /// 音频合成（要注意音频顺序,只支持MP3格式）
+        /// </summary>
+        /// <param name="data">
+        /// [{"mp3":"xxxxxxxxx","topsize":0},{"mp3":"xxxxxxxxx","topsize":1},{"mp3":"xxxxxxxxx","topsize":2}
+        /// ,{"mp3":"xxxxxxxxx","topsize":3},{"mp3":"xxxxxxxxx","topsize":4}]
+        /// </param>
+        /// <returns></returns>
+        public ApiResult ComposeAudios(dynamic data)
+        {
+            ApiResult apiResult = new ApiResult();
+            List<string> local_mp3_list = new List<string>();
+            string output = "";
+            try
+            {
+                if (!Util.isNotNull(data))
+                {
+                    return new Models.ApiResult()
+                    {
+                        success = false,
+                        message = "参数错误"
+                    };
+                }
+                string folder = System.AppDomain.CurrentDomain.BaseDirectory + "download/";
+                //获取formdata数据
+                if (!System.IO.Directory.Exists(Path.GetDirectoryName(folder)))
+                {
+                    System.IO.Directory.CreateDirectory(Path.GetDirectoryName(folder));
+                }
+                var _mp3 = new { mp3 = "", topsize = 0 };
+                List<dynamic> list = new List<dynamic>();
+                list.Add(_mp3);
+                dynamic[] _mp3_data_list = Newtonsoft.Json.JsonConvert.DeserializeAnonymousType(data.ToString(), list.ToArray());
+                var mp3_list = _mp3_data_list.OrderBy(o => o.topsize).Select(o => o.mp3);
+                string file_type = "";
+                foreach (var mp3 in mp3_list)
+                {
+                    string mp3_file = mp3.ToString();
+                    if (!Path.GetExtension(mp3_file).ToLower().Contains("mp3"))
+                    {
+                        return new ApiResult()
+                        {
+                            success=false,
+                            message="只支持MP3格式的文件拼接"
+                        };
+                    }
+                    file_type = Path.GetExtension(mp3.ToString());
+                    string save_path = folder + Path.GetFileName(mp3.ToString());
+                    string local_mp3 = UploadFile.DownloadFile(save_path.Replace("/", "\\"), mp3.ToString()).Result;
+                    local_mp3_list.Add(local_mp3);
+                }
+                output = folder + sys.getRandomStr() + "_output"+ file_type;
+                if(FfmpegHelper.ComposeAudios(local_mp3_list.ToArray(), ref output))
+                {
+                    apiResult.data= UploadFile.PostFile(output);
+                    apiResult.success = true;
+                    apiResult.message = "合成成功";
+                }
+                else
+                {
+                    return new ApiResult()
+                    {
+                        success = false,
+                        message="合成失败"
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResult()
+                {
+                    success=false,
+                    message=ex.Message
+                };
+            }
+            finally
+            {
+                if (local_mp3_list.Count > 0)
+                {
+                    foreach(string mp3 in local_mp3_list)
+                    {
+                        File.Delete(mp3);
+                    }
+                }
+                if (Util.isNotNull(output))
+                {
+                    File.Delete(output);
+                }
+            }
+            return apiResult;
+        }
+        #endregion
     }
 }

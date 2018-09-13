@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace AudioToolNew.Common
@@ -188,6 +189,71 @@ namespace AudioToolNew.Common
             {
                 return "{\"success\":false,\"message\":\"上传文件时远程服务器发生异常--" + ex.Message + "\"}";
             }
+        }
+
+        /// <summary>
+        /// 保存文本文件
+        /// </summary>
+        /// <param name="save_path"></param>
+        /// <param name="file_url"></param>
+        /// <returns></returns>
+        public static async Task<string> DownloadTxtFile(string save_path, string file_url)
+        {
+            //重新存储到一个新的文件目录
+            if (!System.IO.Directory.Exists(Path.GetDirectoryName(save_path)))
+            {
+                System.IO.Directory.CreateDirectory(Path.GetDirectoryName(save_path));
+            }
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(file_url));
+            request.ContentType = "text/html;charset=utf-8";
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+
+                using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.Default))
+                {
+                    var rd = reader.ReadToEnd();
+                    using (StreamWriter writer = new StreamWriter(save_path, true, Encoding.UTF8))
+                    {
+                        writer.Write(rd);
+                    }
+                }
+            }
+            return save_path;
+        }
+        /// <summary>
+        /// 保存文件
+        /// </summary>
+        /// <param name="save_path"></param>
+        /// <param name="file_url"></param>
+        /// <returns></returns>
+        public static async Task<string> DownloadFile(string save_path, string file_url)
+        {
+            //重新存储到一个新的文件目录
+            if (!System.IO.Directory.Exists(Path.GetDirectoryName(save_path)))
+            {
+                System.IO.Directory.CreateDirectory(Path.GetDirectoryName(save_path));
+            }
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(file_url));
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using (Stream reader = response.GetResponseStream())
+                {
+                    var readLength = 1024000;//1000K
+                    byte[] bytes = new byte[readLength];
+                    int writeLength;
+
+                    while ((writeLength = reader.Read(bytes, 0, readLength)) > 0)
+                    {
+                        //使用追加方式打开一个文件流
+                        using (FileStream fs = new FileStream(save_path, FileMode.Append, FileAccess.Write))
+                        {
+                            fs.Write(bytes, 0, writeLength);
+                        }
+                    }
+
+                }
+            }
+            return save_path;
         }
     }
 }

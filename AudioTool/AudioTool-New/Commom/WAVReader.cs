@@ -1,5 +1,4 @@
-﻿using AudioToolNew.Models.Musicline;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -199,74 +198,12 @@ namespace AudioToolNew.Common
                     {
                         startSecond = Math.Round((double)totalCount / AvgBytesPerSec, 5) * 2;//有声音时继续累加时间
                     }
+
                 }
             }
             catch(Exception ex)
             {
-                LogHelper.Error(ex.Message);
-            }
-        }
-        /// <summary>
-        /// musicline4
-        /// </summary>
-        /// <param name="file_path"></param>
-        /// <param name="splitTime"></param>
-        /// <param name="MusicContents"></param>
-        /// <param name="split"></param>
-        public void GetTimeSpan(string file_path, out List<TimeSpan> splitTime, out List<MusicContent> MusicContents, double split)
-        {
-            splitTime = new List<TimeSpan>();
-            MusicContents = new List<MusicContent>();
-            try
-            {
-                ReadWAVFile(file_path);
-                //1秒的字节数，16000字节
-                double bytesCount = AvgBytesPerSec * split;
-                int count = 0;
-                int totalCount = 0;
-                bool _first = true;//是否第一次进入
-                bool _hasVoice = true;//是否有声音
-                double startSecond = 0;//计算时间
-                foreach (var data in wavdata)
-                {
-                    
-                    ++count;
-                    ++totalCount;
-                    double _data = data / 1000.0;
-                    double max = Math.Abs(_data);//取绝对值,大于1的时候表示有声音
-                    double time = Math.Round((double)totalCount / AvgBytesPerSec, 5) * 2;//通过字节数算时间
 
-                    if (_hasVoice && Math.Abs(_data) < 1 && _first)//第一次进入
-                    {
-                        _first = false;
-                        _hasVoice = false;
-                    }
-                    //无声音时，计算时间
-                    else if (!_first && _hasVoice && max < 1 && (time - startSecond) > split)//每次结束对话
-                    {
-                        _hasVoice = false;
-                        splitTime.Add(TimeSpan.FromSeconds(time - split));
-                    }
-                    else if (!_hasVoice && max > 1)//开始有声音
-                    {
-                        MusicContent music = new MusicContent();
-                        startSecond = Math.Round((double)totalCount / AvgBytesPerSec, 5) * 2;
-                        _hasVoice = true;
-                        splitTime.Add(TimeSpan.FromSeconds(startSecond));
-                        //voiceMilliSecond.Add(startSecond);
-                        music.voiceMilliSecond = startSecond;
-                        MusicContents.Add(music);
-                    }
-                    else if (_hasVoice && max > 1)//正在播声音
-                    {
-                        startSecond = Math.Round((double)totalCount / AvgBytesPerSec, 5) * 2;//有声音时继续累加时间
-                    }
-                    
-                }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(ex.Message);
             }
         }
     }

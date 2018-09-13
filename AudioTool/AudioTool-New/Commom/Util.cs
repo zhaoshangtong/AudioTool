@@ -60,7 +60,7 @@ public class Util
         else
             return ip;
     }
-
+   
     /// <summary>
     /// 获得服务器的域名路径，包含端口
     /// </summary>
@@ -367,7 +367,7 @@ public class Util
         string boundary = "----------------------------" + DateTime.Now.Ticks.ToString("x");//分界线
         byte[] boundaryBytes = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
 
-        request.ContentType = "multipart/form-data; boundary=" + boundary; ;//内容类型
+        request.ContentType = "multipart/form-data; boundary=" + boundary; //内容类型
 
         //3>表单数据模板
         string formdataTemplate = "\r\n--" + boundary + "\r\nContent-Disposition: form-data; name=\"{0}\";\r\n\r\n{1}";
@@ -736,7 +736,7 @@ public class Util
         string imgpath = "";
         try
         {
-            string domain = ConfigurationManager.ConnectionStrings["FILESERVERADDRESS"].ConnectionString;
+            string domain = ConfigurationManager.AppSettings["FILESERVERADDRESS"].ToString();
             //上传文件到文件服务器并取得返回地址
             FileInfo file = new FileInfo(path);
             Dictionary<string, object> dic = new Dictionary<string, object>();
@@ -880,25 +880,64 @@ public class Util
             return 0;
         }
     }
+
+    /// <summary>
+    /// 获取百度语音识别结果
+    /// </summary>
+    /// <param name="file"></param>
+    /// <param name="lan"></param>
+    /// <returns></returns>
+    public static List<string> GetSpeechResult(FileInfo file,string lan)
+    {
+        try
+        {
+            //string domain = "http://devefile.chubanyun.net/";
+            string domain = ConfigurationManager.AppSettings["FILESERVERADDRESS"].ToString();
+            string result = "";
+
+            if (lan == "en")
+            {
+                result = HttpPostFile(domain + "/index.aspx?method=audioToWordEn", file, null);
+            }
+            else if (lan == "zh")
+            {
+                result = HttpPostFile(domain + "/index.aspx?method=audioToWordZh", file, null);
+            }
+            if (Util.isNotNull(result))
+            {
+                JObject json = (JObject)JObject.Parse(result);
+                if ((bool)json["success"])
+                {
+                    string data = json["data"].ToString();
+                    if (Util.isNotNull(data))
+                    {
+                        List<string> speech_list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(data);
+                        return speech_list;
+                    }
+                }
+            }
+            return null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
     #endregion
 
     #region 读取txt
     /// <summary>
-    /// 读取txt
+    /// 读取txt内容
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
     public static string ReadTxt(string path)
     {
         StringBuilder line = new StringBuilder();
-        //FileStream file = new FileStream(path, FileMode.Open);
-        //var coding = GetEncoding(file, Encoding.Default);
-        //file.Close();
-        //file.Dispose();
         using (StreamReader sr = new StreamReader(path, Encoding.UTF8))
         {
             string text;
-            while (isNotNull(text = sr.ReadLine()))
+            while (isNotNull(text = sr.ReadLine()) || !sr.EndOfStream)
             {
                 string _text = "";
                 //移除txt/lrc的时间戳
@@ -912,6 +951,10 @@ public class Util
                 {
                     _text += text.Substring(end + 1, text.Trim().Length - end - 1);
                 }
+                if (start < 0 && end < 0)
+                {
+                    _text = text;
+                }
                 if (isNotNull(_text))
                 {
                     line.Append(_text + "|");
@@ -920,7 +963,48 @@ public class Util
         }
         return line.ToString();
     }
-
+    /// <summary>
+    /// 读取Lrc文件时间戳与对应的原文
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static Dictionary<TimeSpan,string> ReadLrc(string path)
+    {
+        Dictionary<TimeSpan, string> line = new Dictionary<TimeSpan, string>();
+        using (StreamReader sr = new StreamReader(path, Encoding.UTF8))
+        {
+            string text;
+            while (isNotNull(text = sr.ReadLine())||!sr.EndOfStream)
+            {
+                //移除txt/lrc的时间戳。第一组中括号默认是时间戳
+                int start = text.Trim().IndexOf('[');
+                int end = text.Trim().IndexOf(']');
+                if(start>=0 && end > start)
+                {
+                    TimeSpan time = default(TimeSpan);
+                    string time_text = text.Substring(start+1, end - start-1);//不要中括号
+                    if (time_text.Contains(":")&&time_text.Split(':').Length <= 2)
+                    {
+                        time_text = "00:" + time_text;
+                    }
+                    TimeSpan.TryParse(time_text, out time);
+                    if (time.TotalMilliseconds > 0)
+                    {
+                        if (text.Length > end+1)
+                        {
+                            string text_content = text.Substring(end+1);
+                            line.Add(time, text_content);
+                        }
+                        else
+                        {
+                            line.Add(time, "");
+                        }
+                    }
+                }
+            }
+        }
+        return line;
+    }
     #endregion
 
     #region

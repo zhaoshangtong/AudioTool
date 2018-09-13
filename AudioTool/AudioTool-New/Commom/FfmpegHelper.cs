@@ -249,6 +249,96 @@ namespace AudioToolNew.Commom
             }
             return output;
         }
+        /// <summary>
+        /// 音频拼接 ffmpeg64.exe -i "concat:123.mp3|124.mp3" -acodec copy output.mp3
+        /// 参考(里面有音频混合):http://blog.sina.com.cn/s/blog_50e610900102vkab.html
+        /// </summary>
+        /// <param name="inputs">多个输入音频</param>
+        /// <param name="output">输出音频</param>
+        /// <returns></returns>
+        public static bool ComposeAudios(string[] inputs,ref string output)
+        {
+            output=output.Replace("/", "\\");
+            string error = "";
+            string ffmpegPath = System.AppDomain.CurrentDomain.BaseDirectory + "MediaConvert\\";
+            string szExeFilePath = ffmpegPath + "ffmpeg.exe ";
+            Process p = new Process();
+            p.StartInfo.FileName = szExeFilePath;
+            string command = " concat:";
+            foreach(string input in inputs)
+            {
+                command += input+"|";
+            }
+            command = command.Substring(0, command.Length - 1)+"";
+            command = "-i" + command + " -acodec copy " + output;
+            p.StartInfo.Arguments = command;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardInput = true;     //重定向输入（一定是true） 
+            p.StartInfo.RedirectStandardOutput = true;    //重定向输出    
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.CreateNoWindow = false;
+            try
+            {
+                if (p.Start())//开始进程
+                {
+                    error = p.StandardError.ReadToEnd();//读取进程的输出,StandardOutput不行，因为ffmpeg输出都是StandardError
+                    p.WaitForExit();
+                    p.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            finally
+            {
+                if (p != null)
+                { p.Close(); }
+            }
+            if (System.IO.File.Exists(output))
+            {
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// 音频降噪
+        /// 参考:https://www.cnblogs.com/yongfengnice/p/7121946.html
+        /// </summary>
+        /// <param name="input"></param>
+        public static void Denoise(string input)
+        {
+            string error = "";
+            string ffmpegPath = System.AppDomain.CurrentDomain.BaseDirectory + "MediaConvert\\";
+            string szExeFilePath = ffmpegPath + "ffmpeg.exe ";
+            Process p = new Process();
+            p.StartInfo.FileName = szExeFilePath;
+            p.StartInfo.Arguments = $"ffplay  -i  {input}  -nr  500";
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardInput = true;     //重定向输入（一定是true） 
+            p.StartInfo.RedirectStandardOutput = true;    //重定向输出    
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.CreateNoWindow = false;
+            try
+            {
+                if (p.Start())//开始进程
+                {
+                    error = p.StandardError.ReadToEnd();//读取进程的输出,StandardOutput不行，因为ffmpeg输出都是StandardError
+                    p.WaitForExit();
+                    p.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                
+            }
+            finally
+            {
+                if (p != null)
+                { p.Close(); }
+            }
+        }
+
     }
     enum SampleFmt
     {

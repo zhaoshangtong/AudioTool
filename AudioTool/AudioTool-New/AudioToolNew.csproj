@@ -249,7 +249,6 @@
     <Compile Include="Commom\LogHelper.cs" />
     <Compile Include="Commom\Musicline.cs" />
     <Compile Include="Commom\Musicline2.cs" />
-    <Compile Include="Commom\Musicline4.cs" />
     <Compile Include="Commom\Musicline3.cs" />
     <Compile Include="Commom\NAudioHelper.cs" />
     <Compile Include="Commom\SampleAggregator.cs" />
@@ -267,8 +266,6 @@
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\Musicline\BaiduRead.cs" />
-    <Compile Include="Models\Musicline\MusicContent.cs" />
     <Compile Include="Models\Musicline\MusicResult.cs" />
     <Compile Include="Models\Musicline\Similar.cs" />
     <Compile Include="Models\Musicline\TextContrastResult.cs" />
@@ -324,7 +321,9 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -356,6 +355,9 @@
       <Project>{02587B36-CEBD-4E90-9A06-CC49006E66F4}</Project>
       <Name>Rays.Utility</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

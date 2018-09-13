@@ -10,9 +10,17 @@ namespace AudioToolNew.Controllers
     {
         public ActionResult Index()
         {
-            ViewBag.Title = "Home Page";
+            ViewBag.Title = "音频工具";
 
             return View();
+        }
+        [HttpPost]
+        public ActionResult Test(string path)
+        {
+            TimeSpan time = TimeSpan.Parse("00:00:00.09");
+            string folder = System.IO.Path.GetDirectoryName(path);
+            Util.ReadLrc(path);
+            return new JsonResult() {Data=true};
         }
     }
 }

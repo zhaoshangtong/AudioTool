@@ -50,7 +50,7 @@ namespace AudioToolNew.Commom
                 //enWords[i] = replaceSymbol(enWords[i]);
                 for (int j = 0; j < words.Length; j++)
                 {
-                    if (words[j] == enWords[i])
+                    if (words[j]==enWords[i])
                     {
                         accuracyNum += 1;
                         break;
@@ -106,7 +106,7 @@ namespace AudioToolNew.Commom
         /// <returns></returns>
         public static int calaIntegritySocre(string enText, string[] words, float accuracySocre)
         {
-            string[] enWords = getSentenceWords(enText);
+            string[] enWords = getSentenceWords(replaceSymbol(enText));
             float integritySocre = 0;
             if (words.Length > enWords.Length)//识别单词数大于标准文本单词数
             {
@@ -183,7 +183,7 @@ namespace AudioToolNew.Commom
         /// <returns></returns>
         public static char[] getSentenceWordsZh(string speechText)
         {
-            speechText = Regex.Replace(speechText, @"\p{P}", "");
+            speechText= Regex.Replace(speechText, @"\p{P}", "");
             char[] words = speechText.ToCharArray();
             //string[] words = Regex.Split(speechText, "[,.:\\s!?！？，。]");           
             List<char> list = new List<char>();
@@ -311,7 +311,7 @@ namespace AudioToolNew.Commom
             string json = "";
             json = "[";
             //string[] enWords = getSentenceWords(enText);//对比的时候去掉符号，可能修改，enWords1为原句子
-            char[] enWordsZh = enText.ToCharArray();
+            char[] enWordsZh= enText.ToCharArray();
             char[] enWordsZh1 = enText.ToCharArray();
             //string[] enWords1 = getSentenceWords(enText);
             bool flag = false;
@@ -353,6 +353,21 @@ namespace AudioToolNew.Commom
             sentence = sentence.Replace("！", "");
             sentence = sentence.Replace("\"", "");
             return sentence;
+        }
+
+        internal static string getSentenceAccuracy3(string enText, List<string> speechResult)
+        {
+            string json = "";
+            json = "[";
+            string[] enWords = getSentenceWords(enText);//对比的时候去掉符号，可能修改，enWords1为原句子
+            string[] enWords1 = getSentenceWords(enText);
+            for (int i = 0; i < enWords.Length; i++)
+            {
+                json += "{\"word\":\"" + enWords1[i] + "\",\"isError\":true},";
+            }
+            json = json.TrimEnd(',');
+            json += "]";
+            return json;
         }
     }
 }
